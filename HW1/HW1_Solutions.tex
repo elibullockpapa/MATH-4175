@@ -1,0 +1,221 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}  % Sets all margins to 1 inch
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\setlength{\parindent}{0pt}  % Disable paragraph indentation globally
+
+\title{Homework 1}
+\author{Eli Bullock-Papa}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{Problem 1}
+\textbf{Stinson, 2.6:} If an encryption function $e(k, p)$ is identical to the decryption function $d(k, c)$ for the same key $k$, then the key $k$ is said to be an involutory key. Find all the involutory keys in the Shift Cipher over $\mathbb{Z}_{26}$.
+\vspace{1em}
+
+\textbf{Remember:} 
+
+$e(k, p) \equiv p + k \pmod{26}$ 
+
+$d(k, c) \equiv c - k \pmod{26}$
+
+\vspace{1em}
+\textbf{Solution:}
+
+For any plaintext $p$, if we encrypt and then encrypt again with an involutory key $k$, we should get back $p$:
+
+$p \equiv e(k, e(k, p)) \pmod{26}$
+
+% Substituting the encryption function:
+$p \equiv e(k, p + k \pmod{26}) \pmod{26}$
+
+% Substituting the encryption function:
+$p \equiv (p + k) + k \pmod{26}$
+
+$p \equiv p + 2k \pmod{26}$
+
+$0 \equiv 2k \pmod{26}$
+
+$k = 13, 0$
+
+Thus, $k = 13, 0$ are the only involutory keys in the Shift Cipher over $\mathbb{Z}_{26}$.
+
+\newpage
+\section*{Problem 2}
+\textbf{Stinson, 2.26:} We describe a special case of a Permutation Cipher. Let $m,n$ be positive integers. Write out the plaintext, by rows, in $m \times n$ rectangles. For example, if $m = 3, n = 4$, then we would encrypt the plaintext ``cryptography is intriguing'' by forming the following rectangles:
+
+\begin{center}
+cryp \quad isin\\
+togr \quad trig\\
+aphy \quad uing
+\end{center}
+
+The ciphertext would be formed by reading in columns: ctaropyghpryitusriiinngg.
+
+\textbf{(a)} Describe how Bob would decrypt a ciphertext string, given values for $m$ and $n$.
+
+\textbf{(b)} Decrypt the following ciphertext, which was obtained by using this method of encryption (but the values of $m$ and $n$ are not given, nor do you know the number of rectangles, but the text fits into a whole number of rectangles without any letters left over):
+
+MYAMRARUYIQTENCTORAHROYWDSOYEOUARRGDERNOGW
+
+\vspace{1em}
+\textbf{2a Solution:}
+
+\begin{enumerate}
+    \item Create a matrix of size $m \times$ row length, where row length = ciphertext length / m. This will store characters..
+    \item Fill the matrix column wise, such that the first $m$ characters of the ciphertext fill the first column from top to bottom, the next $m$ characters fill the second column, and so on, until all $n$ columns are filled.
+    \item group each row in the matrix into rectangles of width $n$
+    \item Finally, reconstruct the original message by reading each rectangle column top-down left-right
+\end{enumerate}
+
+\vspace{1em}
+\textbf{2b Solution:}
+Using a program to test all possible combinations of $m$ and $n$, I found that $m=2$ and $n=3$ produces readable text:
+
+\begin{center}
+MAR RYQ ECO ARY DOE URG ENG\\
+YMA UIT NTR HOW SYO ARD ROW
+\end{center}
+
+The decrypted message reads: ``MARY MARY QUITE CONTRARY HOW DOES YOUR GARDEN GROW''
+
+\newpage
+\section*{Problem 3}
+\textbf{This quotation was encrypted with a Substitution Cipher:}
+
+\begin{verbatim}
+AOFKW GOZLP OKLUQ KLGDO BGKCL BQGHL IOCPL GDLWG LZZCP GDOGS
+KONQB PLMFP GHCGH LIOCP LGDLW GLZZC PGDOG SKONQ BPIOB HLHLO GLB
+\end{verbatim}
+
+
+Carefully explain how you decoded the message. If you were unable to read the message, describe your attempts in detail.
+
+\vspace{1em}
+\textbf{Solution:}
+
+Before starting the analysis, I removed the spaces from the ciphertext since having so many consecutive 5-letter words would be highly improbable in natural English text. This gave me:
+
+\begin{verbatim}
+AOFKWGOZLPOKLUQKLGDOBGKCLBQGHLIOCPLGDLWGLZZCPGDOGSKONQBPLMFPGHCGHLIOCPLGDLWGLZZCPGDOGSKONQBPIOBHLHLOGLB
+\end{verbatim}
+
+
+First, I wrote a script to analyze the character frequencies in the ciphertext. The script revealed that L, G, and O are the most frequent letters, appearing 15.53\%, 14.56\%, and 11.65\% of the time respectively.
+
+Letter Frequencies:
+\begin{itemize}
+    \item L: 15.53\%
+    \item G: 14.56\%
+    \item O: 11.65\%
+    \item ... other frequencies ...
+\end{itemize}
+
+I then wrote a program to systematically try mapping these three most frequent letters (L, G, O) to the six most common letters in English (E, T, A, O, I, N). The program generated all possible three-letter combinations and showed partial decodings where unmapped letters were represented with asterisks.
+
+For example, if we tried mapping:
+\begin{itemize}
+    \item L → E (English frequency: 12.7\%)
+    \item G → T (English frequency: 9.1\%)
+    \item O → A (English frequency: 8.2\%)
+\end{itemize}
+
+The partial decoding would look like:
+\begin{verbatim}
+*E***TE*A*E*A***AT*E*T**A**T*A*E**AT*A*TA****T*ET**E**
+\end{verbatim}
+
+This strategy did not reveal any obvious patterns or readable segments. 
+
+\vspace{1em}
+Next, I implemented a sliding window approach to try identifying common English words. The program would:
+
+1. Take a list of common English words (e.g., THE, AND, HERE, NOT)
+
+2. For each possible position in the ciphertext, try matching the pattern of letters against each common word
+
+3. Generate candidate letter mappings and score them based on how well the observed letter frequencies matched expected English letter frequencies
+
+For example, when the program found "HERE" as a possible match at position 18:
+\begin{verbatim}
+Found mapping from sources: [('HERE', 18)]
+Probability Score: 0.711510
+Common words found in decoded text: {'HERE', 'HE'}
+Partial decode: *E***EE***E******EHERE***R*E...
+\end{verbatim}
+
+However, this approach generated many plausible mappings with similar probability scores, and even when combining multiple word matches, it didn't significantly narrow down the search space. The high number of possibilities and similar probability scores made it difficult to identify the correct mapping with confidence.
+
+\newpage
+\noindent\textbf{Problem 4.} Consider the congruence $9x \equiv 3 \pmod{12}$. If we multiply both sides by 2, we get $6x \equiv 6 \pmod{12}$, which has the solution $x \equiv 1$. But $x \equiv 1$ is not a solution to the original congruence. What happened? All we did was multiply both sides by the same amount! Identify the error in logic being exploited here.
+
+\vspace{1em}
+\textbf{Solution:}
+
+The error occurs because we multiplied both sides by 2, which is not coprime with the modulus 12 (gcd(2,12) = 2). When multiplying congruences by a number that shares factors with the modulus, the operation is not reversible and can introduce spurious solutions. This is why $x \equiv 1$ appears as a solution to $6x \equiv 6 \pmod{12}$ but does not satisfy the original congruence $9x \equiv 3 \pmod{12}$.
+
+\newpage
+\noindent\textbf{Problem 5.} Solve the congruence $653x \equiv 12705 \pmod{1287719}$ and show your work. You may use a CAS (Matlab, WolframAlpha, etc.) to assist with routine calculations, but not for solving the congruence directly.
+
+\vspace{1em}
+\textbf{Solution:}
+
+To solve this congruence, we need to find the multiplicative inverse of 653 modulo 1287719 and then multiply both sides by this inverse.
+
+First, let's verify that gcd(653, 1287719) = 1 using the Euclidean Algorithm:
+
+\begin{align*}
+1287719 &= 1972 \cdot 653 + 3 \\
+653 &= 217 \cdot 3 + 2 \\
+3 &= 1 \cdot 2 + 1 \\
+2 &= 2 \cdot 1 + 0
+\end{align*}
+
+Since gcd = 1, a multiplicative inverse exists. Now we work backwards to find it:
+
+Let $k_i$ represent the coefficients in the linear combination. We compute:
+
+\begin{align*}
+k_0 &= 0 \\
+k_1 &= 1 \\
+k_2 &= 0 - (1 \cdot 1972) = -1972 \\
+k_3 &= 1 - (-1972 \cdot 217) = 427925 \\
+k_4 &= -1972 - (427925 \cdot 1) = -429897
+\end{align*}
+
+Therefore, $653^{-1} \equiv 857822 \pmod{1287719}$
+
+Now we can solve the congruence:
+\begin{align*}
+653x &\equiv 12705 \pmod{1287719} \\
+857822 \cdot 653x &\equiv 857822 \cdot 12705 \pmod{1287719} \\
+x &\equiv 857822 \cdot 12705 \pmod{1287719} \\
+x &\equiv 662613 \pmod{1287719}
+\end{align*}
+
+To verify: $653 \cdot 662613 \equiv 12705 \pmod{1287719}$
+
+\newpage
+\noindent\textbf{Problem 6.} Write a formal definition of the Affine Cipher.
+
+\vspace{1em}
+\textbf{Solution:}
+
+The Affine Cipher is defined by the 5-tuple $(P, C, K, E, D)$ where:
+
+\begin{itemize}
+    \item $P = C = \mathbb{Z}_{26}$ (plaintext and ciphertext spaces)
+    \item $K = \{(a,b) \in \mathbb{Z}_{26} \times \mathbb{Z}_{26} \mid \gcd(a,26) = 1\}$ (key space)
+    \item For key $k = (a,b) \in K$:
+    \begin{itemize}
+        \item Encryption: $E_k(x) = (ax + b) \bmod 26$
+        \item Decryption: $D_k(y) = a^{-1}(y - b) \bmod 26$
+    \end{itemize}
+\end{itemize}
+
+where $a^{-1}$ is the multiplicative inverse of $a$ modulo 26.
+
+\end{document}
