@@ -129,8 +129,18 @@ export default function Encryption() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
 
+        // Create a name for the file based on test case if selected
+        let filename = "encrypted_text.txt";
+
+        if (selectedTestCaseKey) {
+            const testNumber = selectedTestCaseKey.replace("test", "");
+            const mode = useCBC ? "cbc" : "ecb";
+
+            filename = `aes-ciphertext${testNumber}-${mode}.txt`;
+        }
+
         a.href = url;
-        a.download = "encrypted_text.txt";
+        a.download = filename;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -145,8 +155,18 @@ export default function Encryption() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
 
+        // Create a name for the file based on test case if selected
+        let filename = "encryption_trace.txt";
+
+        if (selectedTestCaseKey) {
+            const testNumber = selectedTestCaseKey.replace("test", "");
+            const mode = useCBC ? "cbc" : "ecb";
+
+            filename = `aes-trace${testNumber}-${mode}.txt`;
+        }
+
         a.href = url;
-        a.download = "encryption_trace.txt";
+        a.download = filename;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -188,16 +208,23 @@ export default function Encryption() {
                         ? testCase.cbcCiphertextFile
                         : testCase.ecbCiphertextFile;
 
-                    const expectedCiphertext = await fetchCleanFileContent(
-                        expectedCiphertextFile,
-                    );
+                    // Skip comparison if no ciphertext file exists
+                    if (expectedCiphertextFile) {
+                        const expectedCiphertext = await fetchCleanFileContent(
+                            expectedCiphertextFile,
+                        );
 
-                    // Directly compare the ciphertexts
-                    if (ciphertext === expectedCiphertext) {
-                        setComparisonResult("Match!");
+                        // Directly compare the ciphertexts
+                        if (ciphertext === expectedCiphertext) {
+                            setComparisonResult("Match!");
+                        } else {
+                            setComparisonResult(
+                                `Mismatch! Expected: ${expectedCiphertext}, Got: ${ciphertext}`,
+                            );
+                        }
                     } else {
                         setComparisonResult(
-                            `Mismatch! Expected: ${expectedCiphertext}, Got: ${ciphertext}`,
+                            "No reference ciphertext available for this test case.",
                         );
                     }
                 }

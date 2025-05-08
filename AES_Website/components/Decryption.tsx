@@ -54,6 +54,17 @@ export default function Decryption() {
                     const ciphertextFile = useCBC
                         ? testCase.cbcCiphertextFile
                         : testCase.ecbCiphertextFile;
+
+                    // Check if there's a ciphertext file for the current mode
+                    if (!ciphertextFile) {
+                        setError(
+                            `No ciphertext file available for ${useCBC ? "CBC" : "ECB"} mode`,
+                        );
+                        setSelectedTestCaseKey(null);
+
+                        return;
+                    }
+
                     const cipherText =
                         await fetchCleanFileContent(ciphertextFile);
                     const keyValue = await fetchCleanFileContent(
@@ -131,8 +142,17 @@ export default function Decryption() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
 
+        // Create a name for the file based on test case if selected
+        let filename = "decrypted_text.txt";
+
+        if (selectedTestCaseKey) {
+            const testNumber = selectedTestCaseKey.replace("test", "");
+
+            filename = `aes-plaintext${testNumber}.txt`;
+        }
+
         a.href = url;
-        a.download = "decrypted_text.txt";
+        a.download = filename;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -147,8 +167,18 @@ export default function Decryption() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
 
+        // Create a name for the file based on test case if selected
+        let filename = "decryption_trace.txt";
+
+        if (selectedTestCaseKey) {
+            const testNumber = selectedTestCaseKey.replace("test", "");
+            const mode = useCBC ? "cbc" : "ecb";
+
+            filename = `aes-decryption-trace${testNumber}-${mode}.txt`;
+        }
+
         a.href = url;
-        a.download = "decryption_trace.txt";
+        a.download = filename;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -222,9 +252,17 @@ export default function Decryption() {
                         handleTestCaseSelection(newKey || null);
                     }}
                 >
-                    {aesTestCases.map((tc) => (
-                        <SelectItem key={tc.key}>{tc.label}</SelectItem>
-                    ))}
+                    {aesTestCases
+                        .filter((tc) => {
+                            // Only include test cases that have ciphertext files
+                            const hasEcbCiphertext = !!tc.ecbCiphertextFile;
+                            const hasCbcCiphertext = !!tc.cbcCiphertextFile;
+
+                            return hasEcbCiphertext || hasCbcCiphertext;
+                        })
+                        .map((tc) => (
+                            <SelectItem key={tc.key}>{tc.label}</SelectItem>
+                        ))}
                 </Select>
             </div>
 
@@ -282,7 +320,35 @@ export default function Decryption() {
                     isSelected={useCBC}
                     onValueChange={(isSelected) => {
                         setUseCBC(isSelected);
-                        setSelectedTestCaseKey(null); // Deselect test case on mode change
+
+                        // If a test case is selected, check if it has a ciphertext file for the new mode
+                        if (selectedTestCaseKey) {
+                            const testCase = aesTestCases.find(
+                                (tc) => tc.key === selectedTestCaseKey,
+                            );
+
+                            if (testCase) {
+                                const ciphertextFile = isSelected
+                                    ? testCase.cbcCiphertextFile
+                                    : testCase.ecbCiphertextFile;
+
+                                if (!ciphertextFile) {
+                                    setError(
+                                        `No ciphertext file available for ${isSelected ? "CBC" : "ECB"} mode`,
+                                    );
+                                    setSelectedTestCaseKey(null);
+                                } else {
+                                    // If changing modes with a valid test case, reload the test case
+                                    handleTestCaseSelection(
+                                        selectedTestCaseKey,
+                                    );
+
+                                    return;
+                                }
+                            }
+                        }
+
+                        // Default behavior if no test case or test case was cleared
                         setComparisonResult(null);
                     }}
                 >

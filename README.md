@@ -31,5 +31,16 @@ The core AES implementation is contained in the following files:
 - [aesDecryption.ts](https://github.com/elibullockpapa/MATH-4175/blob/main/AES_Website/utils/aesDecryption.ts) - AES decryption implementation with inverse transformations.
 - [aesKeyExpansion.ts](https://github.com/elibullockpapa/MATH-4175/blob/main/AES_Website/utils/aesKeyExpansion.ts) - Key expansion for 128, 192, and 256-bit keys.
 
+### Question Answers
+- [AES and Secrecy Answers](https://github.com/elibullockpapa/MATH-4175/blob/main/AES_Project_Submission_Files/AES_and_Secrecy_Answers.md)
+
+### Encrypted Files
+- [AES Plaintext 10 (decrypted in CBC mode)](https://github.com/elibullockpapa/MATH-4175/blob/main/AES_Project_Submission_Files/aes-plaintext10.txt)
+- [AES Ciphertext 11 (ECB mode)](https://github.com/elibullockpapa/MATH-4175/blob/main/AES_Project_Submission_Files/aes-ciphertext11-ecb.txt)
+- [AES Ciphertext 12 (ECB mode)](https://github.com/elibullockpapa/MATH-4175/blob/main/AES_Project_Submission_Files/aes-ciphertext12-ecb.txt)
+- [AES Ciphertext 13 (ECB mode)](https://github.com/elibullockpapa/MATH-4175/blob/main/AES_Project_Submission_Files/aes-ciphertext13-ecb.txt)
+- [AES Ciphertext 13 (CBC mode)](https://github.com/elibullockpapa/MATH-4175/blob/main/AES_Project_Submission_Files/aes-ciphertext13-cbc.txt)
+
+
 ### Credits
 UI components used in this project are from [HeroUI](https://www.heroui.com/).
