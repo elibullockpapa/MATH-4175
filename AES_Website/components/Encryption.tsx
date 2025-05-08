@@ -38,6 +38,9 @@ export default function Encryption() {
     const textFileInputRef = useRef<HTMLInputElement>(null);
     const keyFileInputRef = useRef<HTMLInputElement>(null);
 
+    // Filter test cases to only include those with a plaintext file (can be encrypted)
+    const encryptableTestCases = aesTestCases.filter(tc => tc.plaintextFile);
+
     // Handle Test Case Selection
     const handleTestCaseSelection = async (tcKey: string | null) => {
         setSelectedTestCaseKey(tcKey);
@@ -47,7 +50,7 @@ export default function Encryption() {
         setError("");
 
         if (tcKey) {
-            const testCase = aesTestCases.find((tc) => tc.key === tcKey);
+            const testCase = encryptableTestCases.find((tc) => tc.key === tcKey);
 
             if (testCase) {
                 try {
@@ -199,7 +202,7 @@ export default function Encryption() {
 
             // Perform comparison if a test case is selected
             if (selectedTestCaseKey) {
-                const testCase = aesTestCases.find(
+                const testCase = encryptableTestCases.find(
                     (tc) => tc.key === selectedTestCaseKey,
                 );
 
@@ -255,7 +258,7 @@ export default function Encryption() {
                         handleTestCaseSelection(newKey || null);
                     }}
                 >
-                    {aesTestCases.map((tc) => (
+                    {encryptableTestCases.map((tc) => (
                         <SelectItem key={tc.key}>{tc.label}</SelectItem>
                     ))}
                 </Select>
