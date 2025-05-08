@@ -11,7 +11,7 @@ import {
 } from "../utils/aesFormUtils";
 
 const KeyExpansion = () => {
-    const [key, setKey] = useState("30190dcc14585301f5bfc5b666c84775"); //  https://collegemath.org/aes/aes-key1.txt
+    const [key, setKey] = useState("");
     const [expandedKey, setExpandedKey] = useState<string>("");
     const [trace, setTrace] = useState<string>("");
     const [error, setError] = useState("");
